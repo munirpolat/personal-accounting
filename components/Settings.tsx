@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { translations } from '../translations';
+import { translations, Language } from '../translations';
 import { Currency, Theme } from '../types';
 
 interface SettingsProps {
@@ -9,14 +9,18 @@ interface SettingsProps {
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
   onUpdateRates: () => void;
+  rateSources?: any[];
+  lang: Language;
 }
 
 export const Settings: React.FC<SettingsProps> = ({ 
   currency, onCurrencyChange, 
   theme, onThemeChange,
-  onUpdateRates 
+  onUpdateRates,
+  rateSources = [],
+  lang
 }) => {
-  const t = translations['en'];
+  const t = translations[lang];
 
   const currencies: { code: Currency; symbol: string; label: string }[] = [
     { code: 'USD', symbol: '$', label: 'US Dollar' },
@@ -40,7 +44,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </div>
           <div>
             <h3 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">{t.theme}</h3>
-            <p className="text-sm text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Appearance</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">{lang === 'tr' ? 'Görünüm' : 'Appearance'}</p>
           </div>
         </div>
 
@@ -71,7 +75,7 @@ export const Settings: React.FC<SettingsProps> = ({
             </div>
             <div>
               <h3 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">{t.currency}</h3>
-              <p className="text-sm text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Auto-Updating Rates</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">{lang === 'tr' ? 'Otomatik Güncellenen Kurlar' : 'Auto-Updating Rates'}</p>
             </div>
           </div>
           <button 
@@ -83,7 +87,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
           {currencies.map((curr) => (
             <button 
               key={curr.code}
@@ -95,6 +99,19 @@ export const Settings: React.FC<SettingsProps> = ({
             </button>
           ))}
         </div>
+
+        {rateSources && rateSources.length > 0 && (
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">{t.sources}:</p>
+            <div className="flex flex-wrap gap-2">
+              {rateSources.map((s, idx) => (
+                <a key={idx} href={s.web?.uri} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline bg-emerald-50 dark:bg-emerald-900/10 px-2 py-1 rounded-md max-w-[150px] truncate">
+                  {s.web?.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

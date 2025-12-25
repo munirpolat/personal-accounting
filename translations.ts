@@ -68,6 +68,11 @@ export const translations = {
     hasAccount: "Already have an account?",
     invalidAuth: "Invalid username or password",
     userExists: "User already exists",
+    apiKeyRequired: "API Key Selection Required",
+    apiKeyDesc: "This application uses advanced generative models (Veo and Gemini 3 Pro). You must select a paid Google Cloud Project API key to proceed.",
+    selectApiKey: "Select API Key",
+    billingDocs: "Billing Documentation",
+    sources: "Sources",
     categories: {
       food: "Food",
       transport: "Transport",
@@ -149,6 +154,11 @@ export const translations = {
     hasAccount: "Zaten hesabınız var mı?",
     invalidAuth: "Geçersiz kullanıcı adı veya şifre",
     userExists: "Kullanıcı zaten mevcut",
+    apiKeyRequired: "API Anahtarı Seçimi Gerekli",
+    apiKeyDesc: "Bu uygulama gelişmiş üretken modeller (Veo ve Gemini 3 Pro) kullanmaktadır. Devam etmek için ücretli bir Google Cloud Projesi API anahtarı seçmelisiniz.",
+    selectApiKey: "API Anahtarı Seç",
+    billingDocs: "Faturalandırma Belgeleri",
+    sources: "Kaynaklar",
     categories: {
       food: "Yiyecek",
       transport: "Ulaşım",

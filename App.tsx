@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { AIAssistant } from './components/AIAssistant';
@@ -28,7 +29,9 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'AI' | 'BILLS' | 'ACCOUNTS' | 'SETTINGS'>('DASHBOARD');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [rates, setRates] = useState<Record<string, number>>({ TRY: 1, USD: 34, EUR: 37, GBP: 44, CAD: 25 });
+  const [rateSources, setRateSources] = useState<any[]>([]);
   const [isUpdatingRates, setIsUpdatingRates] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(true);
   const t = translations[lang];
 
   // Theme synchronization
@@ -41,6 +44,28 @@ const App: React.FC = () => {
     }
     localStorage.setItem('finanza_theme', theme);
   }, [theme]);
+
+  // Fix: Implement mandatory API Key selection check
+  useEffect(() => {
+    const checkApiKey = async () => {
+      // @ts-ignore
+      if (typeof window.aistudio !== 'undefined' && window.aistudio.hasSelectedApiKey) {
+        // @ts-ignore
+        const has = await window.aistudio.hasSelectedApiKey();
+        setHasApiKey(has);
+      }
+    };
+    checkApiKey();
+  }, []);
+
+  const handleOpenSelectKey = async () => {
+    // @ts-ignore
+    if (window.aistudio && window.aistudio.openSelectKey) {
+      // @ts-ignore
+      await window.aistudio.openSelectKey();
+      setHasApiKey(true); // Assume success per guidelines
+    }
+  };
 
   // Load Session
   useEffect(() => {
@@ -102,8 +127,11 @@ const App: React.FC = () => {
   const updateRates = useCallback(async () => {
     setIsUpdatingRates(true);
     try {
-      const newRates = await fetchExchangeRates();
-      if (newRates && newRates.USD > 1) setRates(newRates);
+      const { rates: newRates, sources } = await fetchExchangeRates();
+      if (newRates && newRates.USD > 1) {
+        setRates(newRates);
+        setRateSources(sources);
+      }
     } catch (e) {
       console.error("Failed to update rates", e);
     } finally {
@@ -156,6 +184,34 @@ const App: React.FC = () => {
     setIsAddModalOpen(false);
     setNewTx({ amount: 0, category: EXPENSE_CATEGORIES[0], type: 'EXPENSE', description: '', accountId: accounts[0]?.id || '', date: new Date().toISOString().split('T')[0] });
   };
+
+  if (!hasApiKey) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-6 text-center">
+        <div className="max-w-md space-y-6">
+          <div className="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center text-white text-4xl font-black mx-auto mb-8 shadow-2xl">F</div>
+          <h2 className="text-3xl font-black text-white">{t.apiKeyRequired}</h2>
+          <p className="text-slate-400 text-lg">{t.apiKeyDesc}</p>
+          <div className="space-y-4">
+            <button 
+              onClick={handleOpenSelectKey}
+              className="w-full bg-indigo-600 text-white p-5 rounded-2xl font-black text-xl hover:bg-indigo-700 transition-all active:scale-95"
+            >
+              {t.selectApiKey}
+            </button>
+            <a 
+              href="https://ai.google.dev/gemini-api/docs/billing" 
+              target="_blank" 
+              rel="noreferrer"
+              className="block text-indigo-400 font-bold hover:underline"
+            >
+              {t.billingDocs}
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return <Auth lang={lang} theme={theme} onLogin={handleLogin} />;
@@ -223,7 +279,7 @@ const App: React.FC = () => {
           {activeTab === 'DASHBOARD' ? <Dashboard transactions={displayTransactions} bills={displayBills} onPayBill={(bill) => { setBills(prev => prev.map(b => b.id === bill.id ? { ...b, isPaid: true } : b)); handleAddTransaction({ amount: bill.amount, category: bill.category, description: `${bill.name} Payment`, type: 'EXPENSE', accountId: accounts[0]?.id, date: new Date().toISOString() }, true); }} lang={lang} currencySymbol={currencySymbol} /> 
            : activeTab === 'BILLS' ? <BillTracker bills={displayBills} onAddBill={(b) => setBills(prev => [...prev, { ...b, id: Date.now().toString(), amount: convertValue(Number(b.amount), false), isPaid: false } as Bill])} onPayBill={(bill) => { setBills(prev => prev.map(b => b.id === bill.id ? { ...b, isPaid: true } : b)); handleAddTransaction({ amount: bill.amount, category: bill.category, description: `${bill.name} Payment`, type: 'EXPENSE', accountId: accounts[0]?.id, date: new Date().toISOString() }, true); }} onDeleteBill={(id) => setBills(bills.filter(b => b.id !== id))} lang={lang} currencySymbol={currencySymbol} /> 
            : activeTab === 'ACCOUNTS' ? <AccountManager accounts={displayAccounts} onAddAccount={(acc) => setAccounts(prev => [...prev, { ...acc, id: Date.now().toString(), balance: convertValue(Number(acc.balance), false), color: 'indigo' } as Account])} lang={lang} currencySymbol={currencySymbol} /> 
-           : activeTab === 'SETTINGS' ? <Settings currency={currency} onCurrencyChange={setCurrency} theme={theme} onThemeChange={setTheme} onUpdateRates={updateRates} /> 
+           : activeTab === 'SETTINGS' ? <Settings currency={currency} onCurrencyChange={setCurrency} theme={theme} onThemeChange={setTheme} onUpdateRates={updateRates} rateSources={rateSources} lang={lang} /> 
            : <AIAssistant onAddTransaction={handleAddTransaction} lang={lang} />}
         </div>
       </main>

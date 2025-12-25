@@ -33,44 +33,44 @@ export const analyzeReceipt = async (base64Image: string, lang: Language): Promi
   return JSON.parse(response.text || '{}');
 };
 
-export const fetchExchangeRates = async (): Promise<Record<string, number>> => {
+// Fix: Comply with search grounding rules. Do not attempt to parse it as JSON if search is used.
+export const fetchExchangeRates = async (): Promise<{ rates: Record<string, number>, sources: any[] }> => {
   const ai = getAI();
   try {
     const response = await ai.models.generateContent({
       model: MODEL_MAP.complex,
-      contents: "Query the current market exchange rates for 1 USD to TRY, 1 EUR to TRY, 1 GBP to TRY, and 1 CAD to TRY. Return a JSON object where the keys are 'USD', 'EUR', 'GBP', and 'CAD' and the values are the amount of Turkish Lira (TRY) for exactly 1 unit of that currency. Example: if 1 USD is 33.5 TRY, return {'USD': 33.5}. Be precise and use the absolute latest data from Google Search.",
+      contents: "Search for current exchange rates for 1 USD to TRY, 1 EUR to TRY, 1 GBP to TRY, and 1 CAD to TRY. Provide the latest rates clearly in text.",
       config: {
-        tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            USD: { type: Type.NUMBER },
-            EUR: { type: Type.NUMBER },
-            GBP: { type: Type.NUMBER },
-            CAD: { type: Type.NUMBER }
-          },
-          required: ["USD", "EUR", "GBP", "CAD"]
-        }
+        tools: [{ googleSearch: {} }]
       }
     });
 
-    // Fix: Ensure response.text exists before using it to prevent errors
     const text = response.text || "";
-    // Clean potential markdown if the model ignores responseMimeType
-    const cleanJson = text.replace(/```json|```/g, "").trim();
-    const rates = JSON.parse(cleanJson || '{"USD": 34, "EUR": 37, "GBP": 44, "CAD": 25}');
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     
-    // Validate rates are reasonable (e.g., USD shouldn't be 0.03)
-    if (rates.USD < 1) {
-      throw new Error("Inverse rates detected");
-    }
+    // Fix: Instead of JSON.parse, use robust regex extraction as per search guidelines
+    const rates: Record<string, number> = { TRY: 1 };
+    const currencies = ['USD', 'EUR', 'GBP', 'CAD'];
+    
+    currencies.forEach(curr => {
+      const regex = new RegExp(`${curr}[:\\s-]+(\\d+(\\.\\d+)?)`, 'i');
+      const match = text.match(regex);
+      if (match) {
+        rates[curr] = parseFloat(match[1]);
+      } else {
+        // Fallback for missing matches
+        const fallbackMap: Record<string, number> = { USD: 34.2, EUR: 37.1, GBP: 44.5, CAD: 25.1 };
+        rates[curr] = fallbackMap[curr];
+      }
+    });
 
-    return { TRY: 1, ...rates };
+    return { rates, sources };
   } catch (error) {
     console.error("Currency fetch failed, using fallback:", error);
-    // Fallback based on recent averages
-    return { TRY: 1, USD: 34.2, EUR: 37.1, GBP: 44.5, CAD: 25.1 };
+    return { 
+      rates: { TRY: 1, USD: 34.2, EUR: 37.1, GBP: 44.5, CAD: 25.1 },
+      sources: []
+    };
   }
 };
 

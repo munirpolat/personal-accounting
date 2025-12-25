@@ -72,5 +72,5 @@ export const MODEL_MAP = {
   video: 'veo-3.1-fast-generate-preview',
   live: 'gemini-2.5-flash-native-audio-preview-09-2025',
   tts: 'gemini-2.5-flash-preview-tts',
-  fast: 'gemini-2.5-flash-lite'
+  fast: 'gemini-flash-lite-latest'
 };
