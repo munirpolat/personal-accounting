@@ -11,58 +11,30 @@ export const EXPENSE_CATEGORIES = ['food', 'transport', 'entertainment', 'bills'
 export const INITIAL_ACCOUNTS: Account[] = [
   {
     id: 'acc1',
-    name: 'Main Bank Account',
+    name: 'Bank Account',
     type: 'BANK',
-    balance: 4850,
+    balance: 0,
     color: 'indigo'
   },
   {
     id: 'acc2',
-    name: 'Visa Credit Card',
+    name: 'Credit Card',
     type: 'CREDIT_CARD',
-    balance: -200,
+    balance: 0,
     color: 'slate'
   },
   {
     id: 'acc3',
     name: 'Cash',
     type: 'CASH',
-    balance: 500,
+    balance: 0,
     color: 'emerald'
   }
 ];
 
-export const INITIAL_TRANSACTIONS: Transaction[] = [
-  {
-    id: '1',
-    amount: 5000,
-    category: 'salary',
-    description: 'Monthly Salary',
-    type: 'INCOME',
-    date: new Date().toISOString(),
-    accountId: 'acc1'
-  },
-  {
-    id: '2',
-    amount: 150,
-    category: 'food',
-    description: 'Grocery Shopping',
-    type: 'EXPENSE',
-    date: new Date().toISOString(),
-    accountId: 'acc1'
-  }
-];
+export const INITIAL_TRANSACTIONS: Transaction[] = [];
 
-export const INITIAL_BILLS: Bill[] = [
-  {
-    id: 'b1',
-    name: 'Electricity Bill',
-    amount: 450,
-    dueDate: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
-    category: 'bills',
-    isPaid: false
-  }
-];
+export const INITIAL_BILLS: Bill[] = [];
 
 export const MODEL_MAP = {
   text: 'gemini-3-flash-preview',

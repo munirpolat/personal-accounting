@@ -13,8 +13,8 @@ import { fetchExchangeRates } from './services/geminiService';
 
 const App: React.FC = () => {
   // Global App Config
-  const lang = 'en'; 
-  const [currency, setCurrency] = useState<Currency>('TRY');
+  const lang = 'en'; // Default language set to English
+  const [currency, setCurrency] = useState<Currency>('USD'); // Changed default currency to USD for global context
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem('finanza_theme') as Theme) || 'light';
   });
@@ -28,7 +28,7 @@ const App: React.FC = () => {
   // UI State
   const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'AI' | 'BILLS' | 'ACCOUNTS' | 'SETTINGS'>('DASHBOARD');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [rates, setRates] = useState<Record<string, number>>({ TRY: 1, USD: 34, EUR: 37, GBP: 44, CAD: 25 });
+  const [rates, setRates] = useState<Record<string, number>>({ TRY: 34, USD: 1, EUR: 0.92, GBP: 0.78, CAD: 1.35 });
   const [rateSources, setRateSources] = useState<any[]>([]);
   const [isUpdatingRates, setIsUpdatingRates] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(true);
@@ -45,7 +45,6 @@ const App: React.FC = () => {
     localStorage.setItem('finanza_theme', theme);
   }, [theme]);
 
-  // Fix: Implement mandatory API Key selection check
   useEffect(() => {
     const checkApiKey = async () => {
       // @ts-ignore
@@ -63,7 +62,7 @@ const App: React.FC = () => {
     if (window.aistudio && window.aistudio.openSelectKey) {
       // @ts-ignore
       await window.aistudio.openSelectKey();
-      setHasApiKey(true); // Assume success per guidelines
+      setHasApiKey(true);
     }
   };
 
@@ -128,7 +127,7 @@ const App: React.FC = () => {
     setIsUpdatingRates(true);
     try {
       const { rates: newRates, sources } = await fetchExchangeRates();
-      if (newRates && newRates.USD > 1) {
+      if (newRates && (newRates.USD || newRates.TRY)) {
         setRates(newRates);
         setRateSources(sources);
       }
@@ -146,8 +145,9 @@ const App: React.FC = () => {
   }, [updateRates]);
   
   const convertValue = useCallback((val: number, toDisplay: boolean = true) => {
+    // Basic conversion logic: assume base is USD if we are English-centric now
     const rate = rates[currency] || 1;
-    return toDisplay ? Number((val / rate).toFixed(2)) : Number((val * rate).toFixed(2));
+    return toDisplay ? Number((val * rate).toFixed(2)) : Number((val / rate).toFixed(2));
   }, [currency, rates]);
 
   const displayTransactions = useMemo(() => transactions.map(tr => ({ ...tr, amount: convertValue(tr.amount, true) })), [transactions, convertValue]);
@@ -167,11 +167,11 @@ const App: React.FC = () => {
     const finalTx = tr || newTx;
     if (!finalTx.amount || !finalTx.description || !finalTx.accountId) return;
 
-    const amountInTry = isAlreadyInBase ? Number(finalTx.amount) : convertValue(Number(finalTx.amount), false);
+    const amountInBase = isAlreadyInBase ? Number(finalTx.amount) : convertValue(Number(finalTx.amount), false);
 
     const tx: Transaction = {
       id: Date.now().toString(),
-      amount: amountInTry,
+      amount: amountInBase,
       category: finalTx.category || (finalTx.type === 'INCOME' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]),
       description: finalTx.description || '',
       type: finalTx.type as TransactionType || 'EXPENSE',
