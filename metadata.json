@@ -1,0 +1,9 @@
+{
+  "name": "Simply Finanz - Smart Personal Finance",
+  "description": "AI-powered modern personal finance assistant with voice commands and receipt analysis features.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
