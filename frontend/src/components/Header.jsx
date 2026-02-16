@@ -14,31 +14,31 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/ilanlar?q=${encodeURIComponent(searchQuery)}`);
+      navigate(`/listings?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       {/* Top Bar */}
-      <div className="bg-[#FFD100] py-2">
+      <div className="bg-[#0066CC] py-2">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium">Türkiye'nin En Büyük İlan Sitesi</span>
+            <span className="text-sm font-medium text-white">Canada's Leading Classifieds Marketplace</span>
           </div>
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
-              <button className="text-sm hover:underline" onClick={() => navigate('/hesabim')}>
-                Merhaba, {user?.name}
+              <button className="text-sm hover:underline text-white" onClick={() => navigate('/account')}>
+                Hello, {user?.name}
               </button>
             ) : (
               <>
-                <button className="text-sm hover:underline" onClick={() => navigate('/giris')}>
-                  Giriş Yap
+                <button className="text-sm hover:underline text-white" onClick={() => navigate('/login')}>  
+                  Sign In
                 </button>
-                <span className="text-sm">|</span>
-                <button className="text-sm hover:underline" onClick={() => navigate('/kayit')}>
-                  Üye Ol
+                <span className="text-sm text-white">|</span>
+                <button className="text-sm hover:underline text-white" onClick={() => navigate('/register')}>
+                  Register
                 </button>
               </>
             )}
@@ -52,9 +52,9 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
             <div className="flex items-center">
-              <div className="bg-[#FFD100] px-4 py-2 rounded">
-                <span className="text-2xl font-bold text-black">sahibinden</span>
-                <span className="text-xl font-bold text-black">.com</span>
+              <div className="bg-[#0066CC] px-4 py-2 rounded">
+                <span className="text-2xl font-bold text-white">fromowner</span>
+                <span className="text-xl font-bold text-white">.ca</span>
               </div>
             </div>
           </Link>
@@ -64,7 +64,7 @@ const Header = () => {
             <div className="relative w-full">
               <Input
                 type="text"
-                placeholder="Kelime, ilan no veya mağaza adı ile ara..."
+                placeholder="Search by keyword, listing number, or seller name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pr-10 h-11"
@@ -83,22 +83,22 @@ const Header = () => {
             <Button
               variant="outline"
               className="flex items-center gap-2"
-              onClick={() => navigate('/favoriler')}
+              onClick={() => navigate('/favorites')}
             >
               <Heart className="h-4 w-4" />
-              <span className="hidden lg:inline">Favoriler</span>
+              <span className="hidden lg:inline">Favorites</span>
             </Button>
             <Button
-              className="flex items-center gap-2 bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
-              onClick={() => isAuthenticated ? navigate('/ilan-ver') : navigate('/giris')}
+              className="flex items-center gap-2 bg-[#0066CC] text-white hover:bg-[#0052A3]"
+              onClick={() => isAuthenticated ? navigate('/post-ad') : navigate('/login')}
             >
               <Plus className="h-4 w-4" />
-              <span>İlan Ver</span>
+              <span>Post Ad</span>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(isAuthenticated ? '/hesabim' : '/giris')}
+              onClick={() => navigate(isAuthenticated ? '/account' : '/login')}
             >
               <User className="h-5 w-5" />
             </Button>
@@ -118,7 +118,7 @@ const Header = () => {
           <div className="relative w-full">
             <Input
               type="text"
-              placeholder="Ara..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pr-10"
@@ -141,33 +141,33 @@ const Header = () => {
               className="w-full justify-start"
               variant="ghost"
               onClick={() => {
-                navigate('/favoriler');
+                navigate('/favorites');
                 setMobileMenuOpen(false);
               }}
             >
               <Heart className="h-4 w-4 mr-2" />
-              Favoriler
+              Favorites
             </Button>
             <Button
-              className="w-full justify-start bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
+              className="w-full justify-start bg-[#0066CC] text-white hover:bg-[#0052A3]"
               onClick={() => {
-                isAuthenticated ? navigate('/ilan-ver') : navigate('/giris');
+                isAuthenticated ? navigate('/post-ad') : navigate('/login');
                 setMobileMenuOpen(false);
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              İlan Ver
+              Post Ad
             </Button>
             <Button
               className="w-full justify-start"
               variant="ghost"
               onClick={() => {
-                navigate(isAuthenticated ? '/hesabim' : '/giris');
+                navigate(isAuthenticated ? '/account' : '/login');
                 setMobileMenuOpen(false);
               }}
             >
               <User className="h-4 w-4 mr-2" />
-              {isAuthenticated ? 'Hesabım' : 'Giriş Yap'}
+              {isAuthenticated ? 'My Account' : 'Sign In'}
             </Button>
           </div>
         </div>
