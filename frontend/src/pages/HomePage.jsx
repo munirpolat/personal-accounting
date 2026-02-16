@@ -21,13 +21,13 @@ const HomePage = () => {
       <Header />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-[#FFD100]/10 to-white py-12">
+      <div className="bg-gradient-to-b from-[#0066CC]/10 to-white py-12">
         <div className="max-w-7xl mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            Türkiye'nin En Büyük İlan Sitesi
+            Canada's Leading Classifieds Marketplace
           </h1>
           <p className="text-center text-gray-600 text-lg mb-8">
-            Binlerce ilan arasından aradığını bul veya kolayca ilan ver
+            Find what you're looking for or easily post your ad
           </p>
         </div>
       </div>
@@ -36,20 +36,20 @@ const HomePage = () => {
       <div className="max-w-7xl mx-auto px-4 -mt-8">
         <Card className="shadow-lg">
           <CardContent className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Kategoriler</h2>
+            <h2 className="text-2xl font-bold mb-6">Categories</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => navigate(`/kategori/${category.slug}`)}
-                  className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-[#FFD100] hover:bg-[#FFD100]/5 transition-all duration-200 group"
+                  onClick={() => navigate(`/category/${category.slug}`)}
+                  className="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 hover:border-[#0066CC] hover:bg-[#0066CC]/5 transition-all duration-200 group"
                 >
-                  <div className="text-gray-700 group-hover:text-[#FFD100] transition-colors mb-2">
+                  <div className="text-gray-700 group-hover:text-[#0066CC] transition-colors mb-2">
                     {getIcon(category.icon)}
                   </div>
                   <span className="text-sm font-medium text-center">{category.name}</span>
                   <span className="text-xs text-gray-500 mt-1">
-                    {mockListings.filter(l => l.category === category.name).length} ilan
+                    {mockListings.filter(l => l.category === category.name).length} ads
                   </span>
                 </button>
               ))}
@@ -61,12 +61,12 @@ const HomePage = () => {
       {/* Featured Listings */}
       <div className="max-w-7xl mx-auto px-4 mt-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Vitrin İlanları</h2>
+          <h2 className="text-2xl font-bold">Featured Ads</h2>
           <button
-            onClick={() => navigate('/ilanlar')}
-            className="text-[#FFD100] hover:underline font-medium"
+            onClick={() => navigate('/listings')}
+            className="text-[#0066CC] hover:underline font-medium"
           >
-            Tümünü Gör
+            View All
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -74,7 +74,7 @@ const HomePage = () => {
             <Card
               key={listing.id}
               className="cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              onClick={() => navigate(`/ilan/${listing.id}`)}
+              onClick={() => navigate(`/listing/${listing.id}`)}
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img
@@ -83,8 +83,8 @@ const HomePage = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 {listing.featured && (
-                  <Badge className="absolute top-2 left-2 bg-[#FFD100] text-black hover:bg-[#FFD100]/90">
-                    Vitrin
+                  <Badge className="absolute top-2 left-2 bg-[#0066CC] text-white hover:bg-[#0052A3]">
+                    Featured
                   </Badge>
                 )}
               </div>
@@ -92,8 +92,8 @@ const HomePage = () => {
                 <h3 className="font-semibold text-sm mb-2 line-clamp-2 min-h-[40px]">
                   {listing.title}
                 </h3>
-                <p className="text-xl font-bold text-[#FFD100] mb-2">
-                  {listing.price.toLocaleString('tr-TR')} {listing.currency}
+                <p className="text-xl font-bold text-[#0066CC] mb-2">
+                  ${listing.price.toLocaleString('en-CA')} {listing.currency}
                 </p>
                 <p className="text-sm text-gray-500">{listing.location}</p>
                 <p className="text-xs text-gray-400 mt-1">{listing.date}</p>
@@ -106,23 +106,23 @@ const HomePage = () => {
       {/* Stats Section */}
       <div className="max-w-7xl mx-auto px-4 mt-16">
         <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 md:p-12 text-white">
-          <h2 className="text-3xl font-bold text-center mb-8">sahibinden.com ile</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">Why Choose fromowner.ca</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-[#FFD100] mb-2">60M+</div>
-              <div className="text-sm">Aylık Ziyaret</div>
+              <div className="text-4xl font-bold text-[#0066CC] mb-2">5M+</div>
+              <div className="text-sm">Monthly Visits</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-[#FFD100] mb-2">3M+</div>
-              <div className="text-sm">Aktif İlan</div>
+              <div className="text-4xl font-bold text-[#0066CC] mb-2">500K+</div>
+              <div className="text-sm">Active Ads</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-[#FFD100] mb-2">15M+</div>
-              <div className="text-sm">Üye</div>
+              <div className="text-4xl font-bold text-[#0066CC] mb-2">2M+</div>
+              <div className="text-sm">Members</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-[#FFD100] mb-2">20+</div>
-              <div className="text-sm">Yıllık Tecrübe</div>
+              <div className="text-4xl font-bold text-[#0066CC] mb-2">15+</div>
+              <div className="text-sm">Years Experience</div>
             </div>
           </div>
         </div>

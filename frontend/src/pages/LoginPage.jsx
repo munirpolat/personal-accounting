@@ -25,8 +25,8 @@ const LoginPage = () => {
     
     if (!formData.email || !formData.password) {
       toast({
-        title: "Hata",
-        description: "Lütfen tüm alanları doldurun.",
+        title: "Error",
+        description: "Please fill in all fields.",
         variant: "destructive"
       });
       return;
@@ -40,8 +40,8 @@ const LoginPage = () => {
       login(token, user);
       
       toast({
-        title: "Başarılı!",
-        description: "Giriş yapıldı."
+        title: "Success!",
+        description: "You are now signed in."
       });
 
       setTimeout(() => {
@@ -49,8 +49,8 @@ const LoginPage = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: "Hata",
-        description: error.response?.data?.detail || "Giriş yapılamadı.",
+        title: "Error",
+        description: error.response?.data?.detail || "Unable to sign in.",
         variant: "destructive"
       });
     } finally {
@@ -65,18 +65,18 @@ const LoginPage = () => {
       <div className="max-w-md mx-auto px-4 py-16">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Giriş Yap</CardTitle>
+            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="email">E-posta</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="ornek@email.com"
+                    placeholder="you@example.com"
                     className="pl-10"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -86,7 +86,7 @@ const LoginPage = () => {
               </div>
 
               <div>
-                <Label htmlFor="password">Şifre</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input
@@ -104,25 +104,25 @@ const LoginPage = () => {
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2">
                   <input type="checkbox" className="rounded" />
-                  <span>Beni Hatırla</span>
+                  <span>Remember me</span>
                 </label>
-                <Link to="/sifremi-unuttum" className="text-[#FFD100] hover:underline">
-                  Şifremi Unuttum
+                <Link to="/forgot-password" className="text-[#0066CC] hover:underline">
+                  Forgot Password?
                 </Link>
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
+                className="w-full bg-[#0066CC] text-white hover:bg-[#0052A3]"
                 disabled={loading}
               >
-                {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                {loading ? 'Signing in...' : 'Sign In'}
               </Button>
 
               <p className="text-center text-sm text-gray-600 mt-4">
-                Hesabınız yok mu?{' '}
-                <Link to="/kayit" className="text-[#FFD100] hover:underline font-medium">
-                  Üye Ol
+                Don't have an account?{' '}
+                <Link to="/register" className="text-[#0066CC] hover:underline font-medium">
+                  Register
                 </Link>
               </p>
             </form>
