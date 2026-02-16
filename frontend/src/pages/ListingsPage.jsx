@@ -227,7 +227,7 @@ const ListingsPage = () => {
                     <SelectItem value="date">Newest</SelectItem>
                     <SelectItem value="price-asc">Price (Ascending)</SelectItem>
                     <SelectItem value="price-desc">Price (Descending)</SelectItem>
-                    <SelectItem value="views">En Çok Görüntülenen</SelectItem>
+                    <SelectItem value="views">En Çok Viewnen</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -42,7 +42,7 @@ const FavoritesPage = () => {
                 onClick={() => navigate('/listinglar')}
                 className="bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
               >
-                Adsı Görüntüle
+                Adsı View
               </Button>
             </CardContent>
           </Card>

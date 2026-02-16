@@ -23,7 +23,7 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     toast({
-      title: "Çıkış Yapıldı",
+      title: "Sign Outıldı",
       description: "Başarıyla çıkış yaptınız."
     });
     setTimeout(() => navigate('/'), 1000);
@@ -31,7 +31,7 @@ const ProfilePage = () => {
 
   const handleDelete = (id) => {
     toast({
-      title: "Ad Silindi",
+      title: "Ad Deleteindi",
       description: "Ad başarıyla silindi."
     });
   };
@@ -53,7 +53,7 @@ const ProfilePage = () => {
                   <h2 className="font-bold text-lg">{mockUser.name}</h2>
                   <p className="text-sm text-gray-600">{mockUser.email}</p>
                   {mockUser.verified && (
-                    <span className="text-xs text-green-600 mt-1">Verified Hesap</span>
+                    <span className="text-xs text-green-600 mt-1">Verified Account</span>
                   )}
                 </div>
 
@@ -72,7 +72,7 @@ const ProfilePage = () => {
                     onClick={() => setActiveTab('ayarlar')}
                   >
                     <Settings className="h-4 w-4 mr-2" />
-                    Ayarlar
+                    Settings
                   </Button>
                   <Button
                     variant="ghost"
@@ -80,7 +80,7 @@ const ProfilePage = () => {
                     onClick={handleLogout}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Çıkış Yap
+                    Sign Out
                   </Button>
                 </div>
               </CardContent>
@@ -92,19 +92,19 @@ const ProfilePage = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-6">
                 <TabsTrigger value="listinglarim">Adsım ({userListings.length})</TabsTrigger>
-                <TabsTrigger value="ayarlar">Hesap Ayarları</TabsTrigger>
+                <TabsTrigger value="ayarlar">Account Settingsı</TabsTrigger>
               </TabsList>
 
               <TabsContent value="listinglarim">
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-2xl font-bold">Aktif Adsım</h2>
+                      <h2 className="text-2xl font-bold">Active Adsım</h2>
                       <Button
                         onClick={() => navigate('/listing-ver')}
                         className="bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
                       >
-                        Yeni Ad Ver
+                        New Ad Ver
                       </Button>
                     </div>
 
@@ -144,7 +144,7 @@ const ProfilePage = () => {
                                     size="sm"
                                     onClick={() => navigate(`/listing/${listing.id}`)}
                                   >
-                                    Görüntüle
+                                    View
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -152,7 +152,7 @@ const ProfilePage = () => {
                                     onClick={() => navigate(`/listing/duzenle/${listing.id}`)}
                                   >
                                     <Edit className="h-4 w-4 mr-1" />
-                                    Düzenle
+                                    Edit
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -161,7 +161,7 @@ const ProfilePage = () => {
                                     onClick={() => handleDelete(listing.id)}
                                   >
                                     <Trash2 className="h-4 w-4 mr-1" />
-                                    Sil
+                                    Delete
                                   </Button>
                                 </div>
                               </div>
@@ -177,11 +177,11 @@ const ProfilePage = () => {
               <TabsContent value="ayarlar">
                 <Card>
                   <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold mb-6">Hesap Ayarları</h2>
+                    <h2 className="text-2xl font-bold mb-6">Account Settingsı</h2>
                     
                     <div className="space-y-6">
                       <div>
-                        <h3 className="font-semibold mb-4">Kişisel Bilgiler</h3>
+                        <h3 className="font-semibold mb-4">Kişisel Information</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="text-sm text-gray-600">Ad Soyad</label>
@@ -201,7 +201,7 @@ const ProfilePage = () => {
                           </div>
                         </div>
                         <Button variant="outline" className="mt-4">
-                          Bilgileri Güncelle
+                          Informationi Güncelle
                         </Button>
                       </div>
 
@@ -231,12 +231,12 @@ const ProfilePage = () => {
                       </div>
 
                       <div className="border-t pt-6">
-                        <h3 className="font-semibold mb-2 text-red-600">Hesabı Sil</h3>
+                        <h3 className="font-semibold mb-2 text-red-600">Hesabı Delete</h3>
                         <p className="text-sm text-gray-600 mb-4">
                           Hesabınızı silerseniz all verileriniz kalıcı olarak silinecektir.
                         </p>
                         <Button variant="destructive">
-                          My Accountı Sil
+                          My Accountı Delete
                         </Button>
                       </div>
                     </div>

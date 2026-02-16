@@ -239,7 +239,7 @@ const CreateListingPage = () => {
 
               {/* Additional Details Section */}
               <div className="border-t pt-6">
-                <h3 className="font-semibold mb-4">Ek Bilgiler (Opsiyonel)</h3>
+                <h3 className="font-semibold mb-4">Ek Information (Opsiyonel)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="condition">Durum</Label>
