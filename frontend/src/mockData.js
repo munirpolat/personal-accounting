@@ -286,7 +286,8 @@ export const mockListings = [
     date: "2024-12-18",
     image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
     images: [
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"\n    ],
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"
+    ],
     description: "2024 MacBook Pro 14, M3 Pro chip, 18GB RAM, 512GB SSD, garantili.",
     views: 423,
     featured: false,
