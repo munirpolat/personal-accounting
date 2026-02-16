@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, Plus, Heart, Menu, X } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import { useAuth } from '../AuthContext';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock login state
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -26,11 +27,15 @@ const Header = () => {
             <span className="text-sm font-medium">Türkiye'nin En Büyük İlan Sitesi</span>
           </div>
           <div className="flex items-center gap-4">
-            <button className="text-sm hover:underline" onClick={() => navigate('/giris')}>
-              {isLoggedIn ? 'Hesabım' : 'Giriş Yap'}
-            </button>
-            {!isLoggedIn && (
+            {isAuthenticated ? (
+              <button className="text-sm hover:underline" onClick={() => navigate('/hesabim')}>
+                Merhaba, {user?.name}
+              </button>
+            ) : (
               <>
+                <button className="text-sm hover:underline" onClick={() => navigate('/giris')}>
+                  Giriş Yap
+                </button>
                 <span className="text-sm">|</span>
                 <button className="text-sm hover:underline" onClick={() => navigate('/kayit')}>
                   Üye Ol
@@ -85,7 +90,7 @@ const Header = () => {
             </Button>
             <Button
               className="flex items-center gap-2 bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
-              onClick={() => navigate('/ilan-ver')}
+              onClick={() => isAuthenticated ? navigate('/ilan-ver') : navigate('/giris')}
             >
               <Plus className="h-4 w-4" />
               <span>İlan Ver</span>
@@ -93,7 +98,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(isLoggedIn ? '/hesabim' : '/giris')}
+              onClick={() => navigate(isAuthenticated ? '/hesabim' : '/giris')}
             >
               <User className="h-5 w-5" />
             </Button>
@@ -146,7 +151,7 @@ const Header = () => {
             <Button
               className="w-full justify-start bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
               onClick={() => {
-                navigate('/ilan-ver');
+                isAuthenticated ? navigate('/ilan-ver') : navigate('/giris');
                 setMobileMenuOpen(false);
               }}
             >
@@ -157,12 +162,12 @@ const Header = () => {
               className="w-full justify-start"
               variant="ghost"
               onClick={() => {
-                navigate(isLoggedIn ? '/hesabim' : '/giris');
+                navigate(isAuthenticated ? '/hesabim' : '/giris');
                 setMobileMenuOpen(false);
               }}
             >
               <User className="h-4 w-4 mr-2" />
-              {isLoggedIn ? 'Hesabım' : 'Giriş Yap'}
+              {isAuthenticated ? 'Hesabım' : 'Giriş Yap'}
             </Button>
           </div>
         </div>
