@@ -21,14 +21,14 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/ilanlar" element={<ListingsPage />} />
-            <Route path="/kategori/:categorySlug" element={<ListingsPage />} />
-            <Route path="/ilan/:id" element={<ListingDetailPage />} />
-            <Route path="/ilan-ver" element={<CreateListingPage />} />
-            <Route path="/giris" element={<LoginPage />} />
-            <Route path="/kayit" element={<RegisterPage />} />
-            <Route path="/hesabim" element={<ProfilePage />} />
-            <Route path="/favoriler" element={<FavoritesPage />} />
+            <Route path="/listings" element={<ListingsPage />} />
+            <Route path="/category/:categorySlug" element={<ListingsPage />} />
+            <Route path="/listing/:id" element={<ListingDetailPage />} />
+            <Route path="/post-ad" element={<CreateListingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/account" element={<ProfilePage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
           </Routes>
           <Toaster />
         </BrowserRouter>
