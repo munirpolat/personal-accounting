@@ -65,7 +65,7 @@ async def register(user_data: UserCreate):
         "$or": [{"email": user_data.email}, {"phone": user_data.phone}]
     })
     if existing_user:
-        raise HTTPException(status_code=400, detail="Email veya telefon zaten kayıtlı")
+        raise HTTPException(status_code=400, detail="Email or phone already registered")
     
     # Generate verification code
     verification_code = generate_verification_code()
@@ -84,17 +84,17 @@ async def register(user_data: UserCreate):
     # In production, send SMS with verification code
     logger.info(f"SMS Verification Code for {user_data.phone}: {verification_code}")
     
-    return {"message": "Kayıt başarılı. SMS kodu gönderildi.", "phone": user_data.phone}
+    return {"message": "Registration successful. SMS code sent.", "phone": user_data.phone}
 
 
 @api_router.post("/auth/verify-sms")
 async def verify_sms(verification: SMSVerification):
     user = await users_collection.find_one({"phone": verification.phone})
     if not user:
-        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+        raise HTTPException(status_code=404, detail="User not found")
     
     if user.get("verification_code") != verification.code:
-        raise HTTPException(status_code=400, detail="Geçersiz doğrulama kodu")
+        raise HTTPException(status_code=400, detail="Invalid verification code")
     
     # Update user as verified
     await users_collection.update_one(
@@ -105,17 +105,17 @@ async def verify_sms(verification: SMSVerification):
     # Create token
     token = create_access_token({"sub": user["id"]})
     
-    return {"message": "Telefon doğrulandı", "token": token}
+    return {"message": "Phone verified", "token": token}
 
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
     user = await users_collection.find_one({"email": credentials.email})
     if not user:
-        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
     
     if not verify_password(credentials.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
     
     if not user.get("verified", False):
         raise HTTPException(status_code=403, detail="Lütfen önce telefonunuzu doğrulayın")
@@ -129,7 +129,7 @@ async def login(credentials: UserLogin):
 async def get_me(user_id: str = Depends(get_current_user)):
     user = await users_collection.find_one({"id": user_id})
     if not user:
-        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+        raise HTTPException(status_code=404, detail="User not found")
     
     return UserResponse(**user)
 
@@ -199,7 +199,7 @@ async def get_listings(
 async def get_listing(listing_id: str):
     listing = await listings_collection.find_one({"id": listing_id})
     if not listing:
-        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+        raise HTTPException(status_code=404, detail="Listing not found")
     
     # Get seller info
     user = await users_collection.find_one({"id": listing["user_id"]})
@@ -225,7 +225,7 @@ async def create_listing(
     
     await listings_collection.insert_one(listing.dict())
     
-    return {"message": "İlan oluşturuldu", "listing": ListingResponse(**listing.dict())}
+    return {"message": "Listing created", "listing": ListingResponse(**listing.dict())}
 
 
 @api_router.put("/listings/{listing_id}")
@@ -236,7 +236,7 @@ async def update_listing(
 ):
     listing = await listings_collection.find_one({"id": listing_id})
     if not listing:
-        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+        raise HTTPException(status_code=404, detail="Listing not found")
     
     if listing["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Bu ilanı düzenleme yetkiniz yok")
@@ -250,7 +250,7 @@ async def update_listing(
     )
     
     updated_listing = await listings_collection.find_one({"id": listing_id})
-    return {"message": "İlan güncellendi", "listing": ListingResponse(**updated_listing)}
+    return {"message": "Listing updated", "listing": ListingResponse(**updated_listing)}
 
 
 @api_router.delete("/listings/{listing_id}")
@@ -260,7 +260,7 @@ async def delete_listing(
 ):
     listing = await listings_collection.find_one({"id": listing_id})
     if not listing:
-        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+        raise HTTPException(status_code=404, detail="Listing not found")
     
     if listing["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Bu ilanı silme yetkiniz yok")
@@ -268,7 +268,7 @@ async def delete_listing(
     await listings_collection.delete_one({"id": listing_id})
     await favorites_collection.delete_many({"listing_id": listing_id})
     
-    return {"message": "İlan silindi"}
+    return {"message": "Listing deleted"}
 
 
 @api_router.post("/listings/{listing_id}/view")
@@ -277,7 +277,7 @@ async def increment_view(listing_id: str):
         {"id": listing_id},
         {"$inc": {"views": 1}}
     )
-    return {"message": "Görüntüleme sayısı güncellendi"}
+    return {"message": "View count updated"}
 
 
 # ============ FAVORITES ENDPOINTS ============
@@ -310,7 +310,7 @@ async def add_favorite(
     # Check if listing exists
     listing = await listings_collection.find_one({"id": listing_id})
     if not listing:
-        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+        raise HTTPException(status_code=404, detail="Listing not found")
     
     # Check if already favorited
     existing = await favorites_collection.find_one({
@@ -318,12 +318,12 @@ async def add_favorite(
         "listing_id": listing_id
     })
     if existing:
-        return {"message": "Zaten favorilerde"}
+        return {"message": "Already in favorites"}
     
     favorite = Favorite(user_id=user_id, listing_id=listing_id)
     await favorites_collection.insert_one(favorite.dict())
     
-    return {"message": "Favorilere eklendi"}
+    return {"message": "Added to favorites"}
 
 
 @api_router.delete("/favorites/{listing_id}")
@@ -337,9 +337,9 @@ async def remove_favorite(
     })
     
     if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Favori bulunamadı")
+        raise HTTPException(status_code=404, detail="Favorite not found")
     
-    return {"message": "Favorilerden çıkarıldı"}
+    return {"message": "Removed from favorites"}
 
 
 # ============ USER ENDPOINTS ============
