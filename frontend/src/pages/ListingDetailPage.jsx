@@ -185,7 +185,7 @@ const ListingDetailPage = () => {
                     <p className="font-medium">{listing.category}</p>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-600">Alt Category</span>
+                    <span className="text-sm text-gray-600">Sub Category</span>
                     <p className="font-medium">{listing.subCategory}</p>
                   </div>
                   {Object.entries(listing.details).map(([key, value]) => (
@@ -213,7 +213,7 @@ const ListingDetailPage = () => {
                 <div className="mb-4">
                   <p className="font-medium text-lg">{listing.seller.name}</p>
                   {listing.seller.verified && (
-                    <span className="text-xs text-green-600">Doğrulanmış Üye</span>
+                    <span className="text-xs text-green-600">Verified Member</span>
                   )}
                 </div>
                 <div className="space-y-2">

@@ -53,7 +53,7 @@ const ProfilePage = () => {
                   <h2 className="font-bold text-lg">{mockUser.name}</h2>
                   <p className="text-sm text-gray-600">{mockUser.email}</p>
                   {mockUser.verified && (
-                    <span className="text-xs text-green-600 mt-1">Doğrulanmış Hesap</span>
+                    <span className="text-xs text-green-600 mt-1">Verified Hesap</span>
                   )}
                 </div>
 
@@ -196,7 +196,7 @@ const ProfilePage = () => {
                             <p className="font-medium">{mockUser.phone}</p>
                           </div>
                           <div>
-                            <label className="text-sm text-gray-600">Üyelik Yılı</label>
+                            <label className="text-sm text-gray-600">Memberlik Yılı</label>
                             <p className="font-medium">{mockUser.memberSince}</p>
                           </div>
                         </div>

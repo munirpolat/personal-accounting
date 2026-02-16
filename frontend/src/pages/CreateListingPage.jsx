@@ -102,7 +102,7 @@ const CreateListingPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Card>
           <CardContent className="p-6">
-            <h1 className="text-3xl font-bold mb-6">Ücretsiz Ad Ver</h1>
+            <h1 className="text-3xl font-bold mb-6">Free Ad Ver</h1>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Category Selection */}
@@ -125,10 +125,10 @@ const CreateListingPage = () => {
               {/* Sub Category */}
               {selectedCategory && (
                 <div>
-                  <Label htmlFor="subCategory">Alt Category *</Label>
+                  <Label htmlFor="subCategory">Sub Category *</Label>
                   <Select value={formData.subCategory} onValueChange={(val) => setFormData({...formData, subCategory: val})}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Alt Category Seçin" />
+                      <SelectValue placeholder="Sub Category Seçin" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedCategory.subCategories.map(sub => (
@@ -200,7 +200,7 @@ const CreateListingPage = () => {
 
               {/* Image Upload */}
               <div>
-                <Label>Fotoğraflar * (En az 1, en fazla 10)</Label>
+                <Label>Photolar * (En az 1, en fazla 10)</Label>
                 <div className="mt-2">
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {formData.images.map((img, index) => (
@@ -215,7 +215,7 @@ const CreateListingPage = () => {
                         </button>
                         {index === 0 && (
                           <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs text-center py-1">
-                            Kapak Fotoğrafı
+                            Kapak Photoı
                           </div>
                         )}
                       </div>
@@ -230,7 +230,7 @@ const CreateListingPage = () => {
                           className="hidden"
                         />
                         <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                        <span className="text-xs text-gray-500 text-center px-2">Fotoğraf Ekle</span>
+                        <span className="text-xs text-gray-500 text-center px-2">Photo Add</span>
                       </label>
                     )}
                   </div>
@@ -277,13 +277,13 @@ const CreateListingPage = () => {
                   onClick={() => navigate(-1)}
                   className="flex-1"
                 >
-                  İptal
+                  Cancel
                 </Button>
                 <Button
                   type="submit"
                   className="flex-1 bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
                 >
-                  Adı Yayınla
+                  Adı Publish
                 </Button>
               </div>
 
