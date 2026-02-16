@@ -33,6 +33,7 @@ class ListingCreate(BaseModel):
     location: Optional[str] = None
     images: List[str] = []
     details: Dict[str, str] = {}
+    duration_days: int = 30  # Listing duration in days
 
 class ListingUpdate(BaseModel):
     title: Optional[str] = None
