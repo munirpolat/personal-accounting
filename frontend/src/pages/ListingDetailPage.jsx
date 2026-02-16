@@ -22,7 +22,7 @@ const ListingDetailPage = () => {
         <Header />
         <div className="max-w-7xl mx-auto px-4 py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Ad Bulunamadı</h1>
-          <Button onClick={() => navigate('/')}>Ana Sayfaya Dön</Button>
+          <Button onClick={() => navigate('/')}>Homeya Dön</Button>
         </div>
         <Footer />
       </div>
@@ -60,9 +60,9 @@ const ListingDetailPage = () => {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="text-sm text-gray-600 mb-4">
-          <button onClick={() => navigate('/')} className="hover:underline">Ana Sayfa</button>
+          <button onClick={() => navigate('/')} className="hover:underline">Home</button>
           <span className="mx-2">/</span>
-          <button onClick={() => navigate('/listinglar')} className="hover:underline">Adlar</button>
+          <button onClick={() => navigate('/listinglar')} className="hover:underline">Ads</button>
           <span className="mx-2">/</span>
           <button onClick={() => navigate(`/category/${listing.category.toLowerCase()}`)} className="hover:underline">
             {listing.category}
@@ -170,7 +170,7 @@ const ListingDetailPage = () => {
             {/* Description */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-bold mb-4">Ad Açıklaması</h2>
+                <h2 className="text-xl font-bold mb-4">Ad Descriptionsı</h2>
                 <p className="text-gray-700 whitespace-pre-line">{listing.description}</p>
               </CardContent>
             </Card>
@@ -178,7 +178,7 @@ const ListingDetailPage = () => {
             {/* Details */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-bold mb-4">Ad Detayları</h2>
+                <h2 className="text-xl font-bold mb-4">Ad Detailsı</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <span className="text-sm text-gray-600">Category</span>
@@ -205,7 +205,7 @@ const ListingDetailPage = () => {
             <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h3 className="font-bold mb-4 flex items-center gap-2">
-                  Ad Sahibi
+                  Seller
                   {listing.seller.verified && (
                     <CheckCircle className="h-4 w-4 text-green-500" />
                   )}
@@ -219,16 +219,16 @@ const ListingDetailPage = () => {
                 <div className="space-y-2">
                   <Button className="w-full bg-[#FFD100] text-black hover:bg-[#FFD100]/90 flex items-center justify-center gap-2">
                     <Phone className="h-4 w-4" />
-                    Telefonu Göster
+                    Show Phone
                   </Button>
                   <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                     <Mail className="h-4 w-4" />
-                    Mesaj Gönder
+                    Send Message
                   </Button>
                 </div>
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                   <p className="text-xs text-gray-600">
-                    ⚠️ Güvenliğiniz için alışverişlerinizi Görüntülü Görüşme ile yapın.
+                    ⚠️ For your safety için alışverişlerinizi Görüntülü Görüşme ile yapın.
                   </p>
                 </div>
               </CardContent>
@@ -237,7 +237,7 @@ const ListingDetailPage = () => {
             {/* Location */}
             <Card>
               <CardContent className="p-6">
-                <h3 className="font-bold mb-4">Konum</h3>
+                <h3 className="font-bold mb-4">Location</h3>
                 <div className="flex items-start gap-2 text-sm">
                   <MapPin className="h-5 w-5 text-gray-500 flex-shrink-0" />
                   <div>
@@ -252,7 +252,7 @@ const ListingDetailPage = () => {
 
         {/* Similar Listings */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">Benzer Adlar</h2>
+          <h2 className="text-2xl font-bold mb-6">Similar Ads</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {mockListings
               .filter(l => l.category === listing.category && l.id !== listing.id)

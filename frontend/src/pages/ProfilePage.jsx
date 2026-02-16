@@ -64,7 +64,7 @@ const ProfilePage = () => {
                     onClick={() => setActiveTab('listinglarim')}
                   >
                     <Edit className="h-4 w-4 mr-2" />
-                    Adlarım
+                    Adsım
                   </Button>
                   <Button
                     variant="ghost"
@@ -91,7 +91,7 @@ const ProfilePage = () => {
           <div className="md:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-6">
-                <TabsTrigger value="listinglarim">Adlarım ({userListings.length})</TabsTrigger>
+                <TabsTrigger value="listinglarim">Adsım ({userListings.length})</TabsTrigger>
                 <TabsTrigger value="ayarlar">Hesap Ayarları</TabsTrigger>
               </TabsList>
 
@@ -99,7 +99,7 @@ const ProfilePage = () => {
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-2xl font-bold">Aktif Adlarım</h2>
+                      <h2 className="text-2xl font-bold">Aktif Adsım</h2>
                       <Button
                         onClick={() => navigate('/listing-ver')}
                         className="bg-[#FFD100] text-black hover:bg-[#FFD100]/90"

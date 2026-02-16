@@ -186,7 +186,7 @@ const CreateListingPage = () => {
 
               {/* Description */}
               <div>
-                <Label htmlFor="description">Açıklama *</Label>
+                <Label htmlFor="description">Description *</Label>
                 <Textarea
                   id="description"
                   placeholder="Adınız hakkında detaylı bilgi verin..."
