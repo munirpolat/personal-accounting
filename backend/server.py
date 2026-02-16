@@ -221,14 +221,21 @@ async def create_listing(
     listing_data: ListingCreate,
     user_id: str = Depends(get_current_user)
 ):
+    from datetime import timedelta
+    
+    # Calculate expiration date
+    expires_at = datetime.utcnow() + timedelta(days=listing_data.duration_days)
+    
     listing = Listing(
         **listing_data.dict(),
-        user_id=user_id
+        user_id=user_id,
+        status="pending",  # All new listings start as pending
+        expires_at=expires_at
     )
     
     await listings_collection.insert_one(listing.dict())
     
-    return {"message": "Listing created", "listing": ListingResponse(**listing.dict())}
+    return {"message": "Listing created and pending approval", "listing": ListingResponse(**listing.dict())}
 
 
 @api_router.put("/listings/{listing_id}")
