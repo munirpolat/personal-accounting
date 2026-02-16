@@ -118,7 +118,7 @@ async def login(credentials: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     if not user.get("verified", False):
-        raise HTTPException(status_code=403, detail="Lütfen önce telefonunuzu doğrulayın")
+        raise HTTPException(status_code=403, detail="Please verify your phone first")
     
     token = create_access_token({"sub": user["id"]})
     
@@ -239,7 +239,7 @@ async def update_listing(
         raise HTTPException(status_code=404, detail="Listing not found")
     
     if listing["user_id"] != user_id:
-        raise HTTPException(status_code=403, detail="Bu ilanı düzenleme yetkiniz yok")
+        raise HTTPException(status_code=403, detail="You are not authorized to edit this listing")
     
     update_data = {k: v for k, v in listing_data.dict().items() if v is not None}
     update_data["updated_at"] = datetime.utcnow()
@@ -263,7 +263,7 @@ async def delete_listing(
         raise HTTPException(status_code=404, detail="Listing not found")
     
     if listing["user_id"] != user_id:
-        raise HTTPException(status_code=403, detail="Bu ilanı silme yetkiniz yok")
+        raise HTTPException(status_code=403, detail="You are not authorized to delete this listing")
     
     await listings_collection.delete_one({"id": listing_id})
     await favorites_collection.delete_many({"listing_id": listing_id})
@@ -374,13 +374,13 @@ async def update_profile(
         # Check if email already exists
         existing = await users_collection.find_one({"email": email, "id": {"$ne": user_id}})
         if existing:
-            raise HTTPException(status_code=400, detail="Email zaten kullanılıyor")
+            raise HTTPException(status_code=400, detail="Email already in use")
         update_data["email"] = email
     if phone:
         # Check if phone already exists
         existing = await users_collection.find_one({"phone": phone, "id": {"$ne": user_id}})
         if existing:
-            raise HTTPException(status_code=400, detail="Telefon zaten kullanılıyor")
+            raise HTTPException(status_code=400, detail="Phone already in use")
         update_data["phone"] = phone
     
     if update_data:
@@ -400,7 +400,7 @@ async def upload_image(
 ):
     # Validate file type
     if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Sadece görsel dosyaları yüklenebilir")
+        raise HTTPException(status_code=400, detail="Only image files can be uploaded")
     
     # Generate unique filename
     file_extension = file.filename.split(".")[-1]
@@ -420,7 +420,7 @@ async def upload_image(
 async def get_uploaded_file(filename: str):
     file_path = UPLOAD_DIR / filename
     if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Dosya bulunamadı")
+        raise HTTPException(status_code=404, detail="File not found")
     
     return FileResponse(file_path)
 
