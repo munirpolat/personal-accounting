@@ -14,12 +14,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #FFD100;
+    background: #0066CC;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #E5BD00;
+    background: #0052A3;
 }
 
 /* Animations */
