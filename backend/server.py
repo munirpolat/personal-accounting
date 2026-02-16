@@ -1,15 +1,29 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
+from datetime import datetime
+import shutil
 import uuid
-from datetime import datetime, timezone
 
+# Models
+from models.user import User, UserCreate, UserLogin, SMSVerification, UserResponse
+from models.listing import Listing, ListingCreate, ListingUpdate, ListingResponse
+from models.favorite import Favorite, FavoriteCreate
+
+# Auth
+from auth import (
+    hash_password, 
+    verify_password, 
+    create_access_token, 
+    get_current_user,
+    generate_verification_code
+)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -17,65 +31,22 @@ load_dotenv(ROOT_DIR / '.env')
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'sahibinden_clone')]
 
-# Create the main app without a prefix
+# Collections
+users_collection = db.users
+listings_collection = db.listings
+favorites_collection = db.favorites
+
+# Create the main app
 app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
-
-# Include the router in the main app
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Create uploads directory
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
 
 # Configure logging
 logging.basicConfig(
@@ -83,6 +54,413 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+# ============ AUTH ENDPOINTS ============
+
+@api_router.post("/auth/register")
+async def register(user_data: UserCreate):
+    # Check if user exists
+    existing_user = await users_collection.find_one({
+        "$or": [{"email": user_data.email}, {"phone": user_data.phone}]
+    })
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email veya telefon zaten kayıtlı")
+    
+    # Generate verification code
+    verification_code = generate_verification_code()
+    
+    # Create user
+    user = User(
+        name=user_data.name,
+        email=user_data.email,
+        phone=user_data.phone,
+        password=hash_password(user_data.password),
+        verification_code=verification_code
+    )
+    
+    await users_collection.insert_one(user.dict())
+    
+    # In production, send SMS with verification code
+    logger.info(f"SMS Verification Code for {user_data.phone}: {verification_code}")
+    
+    return {"message": "Kayıt başarılı. SMS kodu gönderildi.", "phone": user_data.phone}
+
+
+@api_router.post("/auth/verify-sms")
+async def verify_sms(verification: SMSVerification):
+    user = await users_collection.find_one({"phone": verification.phone})
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    if user.get("verification_code") != verification.code:
+        raise HTTPException(status_code=400, detail="Geçersiz doğrulama kodu")
+    
+    # Update user as verified
+    await users_collection.update_one(
+        {"phone": verification.phone},
+        {"$set": {"verified": True, "verification_code": None}}
+    )
+    
+    # Create token
+    token = create_access_token({"sub": user["id"]})
+    
+    return {"message": "Telefon doğrulandı", "token": token}
+
+
+@api_router.post("/auth/login")
+async def login(credentials: UserLogin):
+    user = await users_collection.find_one({"email": credentials.email})
+    if not user:
+        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+    
+    if not verify_password(credentials.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+    
+    if not user.get("verified", False):
+        raise HTTPException(status_code=403, detail="Lütfen önce telefonunuzu doğrulayın")
+    
+    token = create_access_token({"sub": user["id"]})
+    
+    return {"token": token, "user": UserResponse(**user)}
+
+
+@api_router.get("/auth/me")
+async def get_me(user_id: str = Depends(get_current_user)):
+    user = await users_collection.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    return UserResponse(**user)
+
+
+# ============ LISTING ENDPOINTS ============
+
+@api_router.get("/listings")
+async def get_listings(
+    category: Optional[str] = None,
+    city: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    sort_by: str = "date",
+    order: str = "desc",
+    page: int = 1,
+    limit: int = 20,
+    featured: Optional[bool] = None,
+    q: Optional[str] = None
+):
+    query = {"status": "active"}
+    
+    if category:
+        query["category"] = category
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if min_price is not None:
+        query["price"] = {"$gte": min_price}
+    if max_price is not None:
+        query.setdefault("price", {})["$lte"] = max_price
+    if featured is not None:
+        query["featured"] = featured
+    if q:
+        query["$or"] = [
+            {"title": {"$regex": q, "$options": "i"}},
+            {"description": {"$regex": q, "$options": "i"}}
+        ]
+    
+    # Sorting
+    sort_field = "created_at" if sort_by == "date" else sort_by
+    sort_order = -1 if order == "desc" else 1
+    
+    # Pagination
+    skip = (page - 1) * limit
+    
+    listings = await listings_collection.find(query).sort(sort_field, sort_order).skip(skip).limit(limit).to_list(limit)
+    total = await listings_collection.count_documents(query)
+    
+    # Get seller info for each listing
+    for listing in listings:
+        user = await users_collection.find_one({"id": listing["user_id"]})
+        if user:
+            listing["seller"] = {
+                "name": user["name"],
+                "phone": user["phone"],
+                "verified": user.get("verified", False)
+            }
+    
+    return {
+        "listings": [ListingResponse(**listing) for listing in listings],
+        "total": total,
+        "page": page,
+        "pages": (total + limit - 1) // limit
+    }
+
+
+@api_router.get("/listings/{listing_id}")
+async def get_listing(listing_id: str):
+    listing = await listings_collection.find_one({"id": listing_id})
+    if not listing:
+        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+    
+    # Get seller info
+    user = await users_collection.find_one({"id": listing["user_id"]})
+    if user:
+        listing["seller"] = {
+            "name": user["name"],
+            "phone": user["phone"],
+            "verified": user.get("verified", False)
+        }
+    
+    return ListingResponse(**listing)
+
+
+@api_router.post("/listings")
+async def create_listing(
+    listing_data: ListingCreate,
+    user_id: str = Depends(get_current_user)
+):
+    listing = Listing(
+        **listing_data.dict(),
+        user_id=user_id
+    )
+    
+    await listings_collection.insert_one(listing.dict())
+    
+    return {"message": "İlan oluşturuldu", "listing": ListingResponse(**listing.dict())}
+
+
+@api_router.put("/listings/{listing_id}")
+async def update_listing(
+    listing_id: str,
+    listing_data: ListingUpdate,
+    user_id: str = Depends(get_current_user)
+):
+    listing = await listings_collection.find_one({"id": listing_id})
+    if not listing:
+        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+    
+    if listing["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Bu ilanı düzenleme yetkiniz yok")
+    
+    update_data = {k: v for k, v in listing_data.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.utcnow()
+    
+    await listings_collection.update_one(
+        {"id": listing_id},
+        {"$set": update_data}
+    )
+    
+    updated_listing = await listings_collection.find_one({"id": listing_id})
+    return {"message": "İlan güncellendi", "listing": ListingResponse(**updated_listing)}
+
+
+@api_router.delete("/listings/{listing_id}")
+async def delete_listing(
+    listing_id: str,
+    user_id: str = Depends(get_current_user)
+):
+    listing = await listings_collection.find_one({"id": listing_id})
+    if not listing:
+        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+    
+    if listing["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Bu ilanı silme yetkiniz yok")
+    
+    await listings_collection.delete_one({"id": listing_id})
+    await favorites_collection.delete_many({"listing_id": listing_id})
+    
+    return {"message": "İlan silindi"}
+
+
+@api_router.post("/listings/{listing_id}/view")
+async def increment_view(listing_id: str):
+    await listings_collection.update_one(
+        {"id": listing_id},
+        {"$inc": {"views": 1}}
+    )
+    return {"message": "Görüntüleme sayısı güncellendi"}
+
+
+# ============ FAVORITES ENDPOINTS ============
+
+@api_router.get("/favorites")
+async def get_favorites(user_id: str = Depends(get_current_user)):
+    favorites = await favorites_collection.find({"user_id": user_id}).to_list(100)
+    
+    listing_ids = [fav["listing_id"] for fav in favorites]
+    listings = await listings_collection.find({"id": {"$in": listing_ids}}).to_list(100)
+    
+    # Get seller info
+    for listing in listings:
+        user = await users_collection.find_one({"id": listing["user_id"]})
+        if user:
+            listing["seller"] = {
+                "name": user["name"],
+                "phone": user["phone"],
+                "verified": user.get("verified", False)
+            }
+    
+    return [ListingResponse(**listing) for listing in listings]
+
+
+@api_router.post("/favorites/{listing_id}")
+async def add_favorite(
+    listing_id: str,
+    user_id: str = Depends(get_current_user)
+):
+    # Check if listing exists
+    listing = await listings_collection.find_one({"id": listing_id})
+    if not listing:
+        raise HTTPException(status_code=404, detail="İlan bulunamadı")
+    
+    # Check if already favorited
+    existing = await favorites_collection.find_one({
+        "user_id": user_id,
+        "listing_id": listing_id
+    })
+    if existing:
+        return {"message": "Zaten favorilerde"}
+    
+    favorite = Favorite(user_id=user_id, listing_id=listing_id)
+    await favorites_collection.insert_one(favorite.dict())
+    
+    return {"message": "Favorilere eklendi"}
+
+
+@api_router.delete("/favorites/{listing_id}")
+async def remove_favorite(
+    listing_id: str,
+    user_id: str = Depends(get_current_user)
+):
+    result = await favorites_collection.delete_one({
+        "user_id": user_id,
+        "listing_id": listing_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Favori bulunamadı")
+    
+    return {"message": "Favorilerden çıkarıldı"}
+
+
+# ============ USER ENDPOINTS ============
+
+@api_router.get("/user/listings")
+async def get_user_listings(user_id: str = Depends(get_current_user)):
+    listings = await listings_collection.find({"user_id": user_id}).sort("created_at", -1).to_list(100)
+    
+    for listing in listings:
+        user = await users_collection.find_one({"id": listing["user_id"]})
+        if user:
+            listing["seller"] = {
+                "name": user["name"],
+                "phone": user["phone"],
+                "verified": user.get("verified", False)
+            }
+    
+    return [ListingResponse(**listing) for listing in listings]
+
+
+@api_router.put("/user/profile")
+async def update_profile(
+    name: Optional[str] = None,
+    email: Optional[str] = None,
+    phone: Optional[str] = None,
+    user_id: str = Depends(get_current_user)
+):
+    update_data = {}
+    if name:
+        update_data["name"] = name
+    if email:
+        # Check if email already exists
+        existing = await users_collection.find_one({"email": email, "id": {"$ne": user_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email zaten kullanılıyor")
+        update_data["email"] = email
+    if phone:
+        # Check if phone already exists
+        existing = await users_collection.find_one({"phone": phone, "id": {"$ne": user_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Telefon zaten kullanılıyor")
+        update_data["phone"] = phone
+    
+    if update_data:
+        update_data["updated_at"] = datetime.utcnow()
+        await users_collection.update_one({"id": user_id}, {"$set": update_data})
+    
+    user = await users_collection.find_one({"id": user_id})
+    return UserResponse(**user)
+
+
+# ============ IMAGE UPLOAD ENDPOINT ============
+
+@api_router.post("/upload")
+async def upload_image(
+    file: UploadFile = File(...),
+    user_id: str = Depends(get_current_user)
+):
+    # Validate file type
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Sadece görsel dosyaları yüklenebilir")
+    
+    # Generate unique filename
+    file_extension = file.filename.split(".")[-1]
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    # Return URL
+    file_url = f"/api/uploads/{unique_filename}"
+    return {"url": file_url}
+
+
+@api_router.get("/uploads/{filename}")
+async def get_uploaded_file(filename: str):
+    file_path = UPLOAD_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Dosya bulunamadı")
+    
+    return FileResponse(file_path)
+
+
+# ============ CATEGORIES ENDPOINT ============
+
+@api_router.get("/categories")
+async def get_categories():
+    # Static categories - same as frontend mockData
+    categories = [
+        {"id": 1, "name": "Emlak", "slug": "emlak"},
+        {"id": 2, "name": "Vasıta", "slug": "vasita"},
+        {"id": 3, "name": "Yedek Parça, Aksesuar", "slug": "yedek-parca"},
+        {"id": 4, "name": "İkinci El ve Sıfır Alışveriş", "slug": "ikinci-el"},
+        {"id": 5, "name": "İş Makineleri & Sanayi", "slug": "is-makineleri"},
+        {"id": 6, "name": "Ustalar ve Hizmetler", "slug": "ustalar"},
+        {"id": 7, "name": "Özel Ders Verenler", "slug": "ozel-ders"},
+        {"id": 8, "name": "Hayvanlar Alemi", "slug": "hayvanlar"},
+        {"id": 9, "name": "İş İlanları", "slug": "is-ilanlari"}
+    ]
+    return categories
+
+
+# Health check
+@api_router.get("/")
+async def root():
+    return {"message": "sahibinden.com Clone API"}
+
+
+# Include the router in the main app
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
