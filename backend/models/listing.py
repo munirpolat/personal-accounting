@@ -28,13 +28,14 @@ class ListingCreate(BaseModel):
     title: str
     description: str
     price: float
-    currency: str = "TL"
+    currency: str = "CAD"
     category: str
     sub_category: str
     city: str
     location: Optional[str] = None
     images: List[str] = []
     details: Dict[str, str] = {}
+    duration_days: int = 30
     duration_days: int = 30  # Listing duration in days
 
 class ListingUpdate(BaseModel):
