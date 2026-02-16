@@ -8,7 +8,7 @@ class Listing(BaseModel):
     title: str
     description: str
     price: float
-    currency: str = "TL"
+    currency: str = "CAD"
     category: str
     sub_category: str
     city: str
@@ -18,7 +18,9 @@ class Listing(BaseModel):
     views: int = 0
     details: Dict[str, str] = {}
     user_id: str
-    status: str = "active"  # active, pending, sold
+    status: str = "pending"  # pending, active, rejected, sold
+    duration_days: int = 30
+    expires_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
