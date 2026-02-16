@@ -102,9 +102,9 @@ const ListingsPage = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">
-            {getCategoryName() || (searchQuery ? `"${searchQuery}" için sonuçlar` : 'Tüm İlanlar')}
+            {getCategoryName() || (searchQuery ? `"${searchQuery}" için sonuçlar` : 'All Adlar')}
           </h1>
-          <p className="text-gray-600">{filteredListings.length} ilan bulundu</p>
+          <p className="text-gray-600">{filteredListings.length} listing bulundu</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -115,7 +115,7 @@ const ListingsPage = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-semibold flex items-center gap-2">
                     <SlidersHorizontal className="h-4 w-4" />
-                    Filtrele
+                    Filter
                   </h2>
                   <Button
                     variant="ghost"
@@ -134,13 +134,13 @@ const ListingsPage = () => {
                 {/* Category Filter */}
                 {!categorySlug && (
                   <div className="mb-4">
-                    <label className="text-sm font-medium mb-2 block">Kategori</label>
+                    <label className="text-sm font-medium mb-2 block">Category</label>
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Tüm Kategoriler" />
+                        <SelectValue placeholder="All Categoryler" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Tüm Kategoriler</SelectItem>
+                        <SelectItem value="all">All Categoryler</SelectItem>
                         {categories.map(cat => (
                           <SelectItem key={cat.id} value={cat.slug}>
                             {cat.name}
@@ -153,13 +153,13 @@ const ListingsPage = () => {
 
                 {/* City Filter */}
                 <div className="mb-4">
-                  <label className="text-sm font-medium mb-2 block">Şehir</label>
+                  <label className="text-sm font-medium mb-2 block">City</label>
                   <Select value={selectedCity} onValueChange={setSelectedCity}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Tüm Şehirler" />
+                      <SelectValue placeholder="All Cityler" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Tüm Şehirler</SelectItem>
+                      <SelectItem value="all">All Cityler</SelectItem>
                       {cities.map(city => (
                         <SelectItem key={city} value={city}>
                           {city}
@@ -171,7 +171,7 @@ const ListingsPage = () => {
 
                 {/* Price Range Filter */}
                 <div className="mb-4">
-                  <label className="text-sm font-medium mb-2 block">Fiyat Aralığı</label>
+                  <label className="text-sm font-medium mb-2 block">Price Aralığı</label>
                   <div className="space-y-3">
                     <Slider
                       value={priceRange}
@@ -196,7 +196,7 @@ const ListingsPage = () => {
                       onChange={(e) => setOnlyFeatured(e.target.checked)}
                       className="w-4 h-4 rounded border-gray-300 text-[#FFD100] focus:ring-[#FFD100]"
                     />
-                    <span className="text-sm">Sadece Vitrin İlanları</span>
+                    <span className="text-sm">Sadece Featured Adları</span>
                   </label>
                 </div>
               </CardContent>
@@ -214,19 +214,19 @@ const ListingsPage = () => {
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <SlidersHorizontal className="h-4 w-4 mr-2" />
-                Filtreler
+                Filterr
               </Button>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Sırala:</span>
+                <span className="text-sm text-gray-600">Sort:</span>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="date">En Yeni</SelectItem>
-                    <SelectItem value="price-asc">Fiyat (Artan)</SelectItem>
-                    <SelectItem value="price-desc">Fiyat (Azalan)</SelectItem>
+                    <SelectItem value="date">Newest</SelectItem>
+                    <SelectItem value="price-asc">Price (Ascending)</SelectItem>
+                    <SelectItem value="price-desc">Price (Descending)</SelectItem>
                     <SelectItem value="views">En Çok Görüntülenen</SelectItem>
                   </SelectContent>
                 </Select>
@@ -255,7 +255,7 @@ const ListingsPage = () => {
             {/* Listings Grid/List */}
             {filteredListings.length === 0 ? (
               <div className="bg-white rounded-lg p-12 text-center">
-                <p className="text-gray-500 text-lg">İlan bulunamadı</p>
+                <p className="text-gray-500 text-lg">Ad not found</p>
               </div>
             ) : (
               <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4'}>
@@ -265,7 +265,7 @@ const ListingsPage = () => {
                     className={`cursor-pointer hover:shadow-lg transition-all duration-200 overflow-hidden group ${
                       viewMode === 'list' ? 'flex flex-row' : ''
                     }`}
-                    onClick={() => navigate(`/ilan/${listing.id}`)}
+                    onClick={() => navigate(`/listing/${listing.id}`)}
                   >
                     <div className={`relative overflow-hidden ${
                       viewMode === 'list' ? 'w-48 flex-shrink-0' : 'aspect-[4/3]'
@@ -277,7 +277,7 @@ const ListingsPage = () => {
                       />
                       {listing.featured && (
                         <Badge className="absolute top-2 left-2 bg-[#FFD100] text-black hover:bg-[#FFD100]/90">
-                          Vitrin
+                          Featured
                         </Badge>
                       )}
                     </div>
@@ -292,7 +292,7 @@ const ListingsPage = () => {
                       <p className="text-sm text-gray-500">{listing.location}</p>
                       <div className="flex items-center justify-between mt-2">
                         <p className="text-xs text-gray-400">{listing.date}</p>
-                        <p className="text-xs text-gray-400">{listing.views} görüntüleme</p>
+                        <p className="text-xs text-gray-400">{listing.views} views</p>
                       </div>
                     </CardContent>
                   </Card>

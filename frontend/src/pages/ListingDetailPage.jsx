@@ -21,7 +21,7 @@ const ListingDetailPage = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">İlan Bulunamadı</h1>
+          <h1 className="text-2xl font-bold mb-4">Ad Bulunamadı</h1>
           <Button onClick={() => navigate('/')}>Ana Sayfaya Dön</Button>
         </div>
         <Footer />
@@ -49,7 +49,7 @@ const ListingDetailPage = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({
       title: "Link kopyalandı",
-      description: "İlan linki panoya kopyalandı.",
+      description: "Ad linki panoya kopyalandı.",
     });
   };
 
@@ -62,9 +62,9 @@ const ListingDetailPage = () => {
         <div className="text-sm text-gray-600 mb-4">
           <button onClick={() => navigate('/')} className="hover:underline">Ana Sayfa</button>
           <span className="mx-2">/</span>
-          <button onClick={() => navigate('/ilanlar')} className="hover:underline">İlanlar</button>
+          <button onClick={() => navigate('/listinglar')} className="hover:underline">Adlar</button>
           <span className="mx-2">/</span>
-          <button onClick={() => navigate(`/kategori/${listing.category.toLowerCase()}`)} className="hover:underline">
+          <button onClick={() => navigate(`/category/${listing.category.toLowerCase()}`)} className="hover:underline">
             {listing.category}
           </button>
           <span className="mx-2">/</span>
@@ -104,7 +104,7 @@ const ListingDetailPage = () => {
                   )}
                   {listing.featured && (
                     <Badge className="absolute top-4 left-4 bg-[#FFD100] text-black hover:bg-[#FFD100]/90">
-                      Vitrin İlan
+                      Featured Ad
                     </Badge>
                   )}
                 </div>
@@ -143,7 +143,7 @@ const ListingDetailPage = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Eye className="h-4 w-4" />
-                        {listing.views} görüntüleme
+                        {listing.views} views
                       </div>
                     </div>
                   </div>
@@ -170,7 +170,7 @@ const ListingDetailPage = () => {
             {/* Description */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-bold mb-4">İlan Açıklaması</h2>
+                <h2 className="text-xl font-bold mb-4">Ad Açıklaması</h2>
                 <p className="text-gray-700 whitespace-pre-line">{listing.description}</p>
               </CardContent>
             </Card>
@@ -178,14 +178,14 @@ const ListingDetailPage = () => {
             {/* Details */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-bold mb-4">İlan Detayları</h2>
+                <h2 className="text-xl font-bold mb-4">Ad Detayları</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <span className="text-sm text-gray-600">Kategori</span>
+                    <span className="text-sm text-gray-600">Category</span>
                     <p className="font-medium">{listing.category}</p>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-600">Alt Kategori</span>
+                    <span className="text-sm text-gray-600">Alt Category</span>
                     <p className="font-medium">{listing.subCategory}</p>
                   </div>
                   {Object.entries(listing.details).map(([key, value]) => (
@@ -205,7 +205,7 @@ const ListingDetailPage = () => {
             <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h3 className="font-bold mb-4 flex items-center gap-2">
-                  İlan Sahibi
+                  Ad Sahibi
                   {listing.seller.verified && (
                     <CheckCircle className="h-4 w-4 text-green-500" />
                   )}
@@ -252,7 +252,7 @@ const ListingDetailPage = () => {
 
         {/* Similar Listings */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">Benzer İlanlar</h2>
+          <h2 className="text-2xl font-bold mb-6">Benzer Adlar</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {mockListings
               .filter(l => l.category === listing.category && l.id !== listing.id)
@@ -262,7 +262,7 @@ const ListingDetailPage = () => {
                   key={similarListing.id}
                   className="cursor-pointer hover:shadow-lg transition-all duration-200 overflow-hidden group"
                   onClick={() => {
-                    navigate(`/ilan/${similarListing.id}`);
+                    navigate(`/listing/${similarListing.id}`);
                     window.scrollTo(0, 0);
                   }}
                 >

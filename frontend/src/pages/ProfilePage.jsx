@@ -11,7 +11,7 @@ import { toast } from '../hooks/use-toast';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('ilanlarim');
+  const [activeTab, setActiveTab] = useState('listinglarim');
 
   const mockUser = {
     name: 'Ahmet Yılmaz',
@@ -31,8 +31,8 @@ const ProfilePage = () => {
 
   const handleDelete = (id) => {
     toast({
-      title: "İlan Silindi",
-      description: "İlan başarıyla silindi."
+      title: "Ad Silindi",
+      description: "Ad başarıyla silindi."
     });
   };
 
@@ -61,10 +61,10 @@ const ProfilePage = () => {
                   <Button
                     variant="ghost"
                     className="w-full justify-start"
-                    onClick={() => setActiveTab('ilanlarim')}
+                    onClick={() => setActiveTab('listinglarim')}
                   >
                     <Edit className="h-4 w-4 mr-2" />
-                    İlanlarım
+                    Adlarım
                   </Button>
                   <Button
                     variant="ghost"
@@ -91,20 +91,20 @@ const ProfilePage = () => {
           <div className="md:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-6">
-                <TabsTrigger value="ilanlarim">İlanlarım ({userListings.length})</TabsTrigger>
+                <TabsTrigger value="listinglarim">Adlarım ({userListings.length})</TabsTrigger>
                 <TabsTrigger value="ayarlar">Hesap Ayarları</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="ilanlarim">
+              <TabsContent value="listinglarim">
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-2xl font-bold">Aktif İlanlarım</h2>
+                      <h2 className="text-2xl font-bold">Aktif Adlarım</h2>
                       <Button
-                        onClick={() => navigate('/ilan-ver')}
+                        onClick={() => navigate('/listing-ver')}
                         className="bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
                       >
-                        Yeni İlan Ver
+                        Yeni Ad Ver
                       </Button>
                     </div>
 
@@ -133,7 +133,7 @@ const ProfilePage = () => {
                                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
                                   <div className="flex items-center gap-1">
                                     <Eye className="h-4 w-4" />
-                                    {listing.views} görüntüleme
+                                    {listing.views} views
                                   </div>
                                   <span>•</span>
                                   <span>{listing.date}</span>
@@ -142,14 +142,14 @@ const ProfilePage = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate(`/ilan/${listing.id}`)}
+                                    onClick={() => navigate(`/listing/${listing.id}`)}
                                   >
                                     Görüntüle
                                   </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate(`/ilan/duzenle/${listing.id}`)}
+                                    onClick={() => navigate(`/listing/duzenle/${listing.id}`)}
                                   >
                                     <Edit className="h-4 w-4 mr-1" />
                                     Düzenle
@@ -233,7 +233,7 @@ const ProfilePage = () => {
                       <div className="border-t pt-6">
                         <h3 className="font-semibold mb-2 text-red-600">Hesabı Sil</h3>
                         <p className="text-sm text-gray-600 mb-4">
-                          Hesabınızı silerseniz tüm verileriniz kalıcı olarak silinecektir.
+                          Hesabınızı silerseniz all verileriniz kalıcı olarak silinecektir.
                         </p>
                         <Button variant="destructive">
                           Hesabımı Sil

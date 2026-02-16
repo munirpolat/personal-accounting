@@ -16,7 +16,7 @@ const FavoritesPage = () => {
     setFavorites(favorites.filter(f => f.id !== id));
     toast({
       title: "Favorilerden Çıkarıldı",
-      description: "İlan favorilerden kaldırıldı."
+      description: "Ad favorilerden kaldırıldı."
     });
   };
 
@@ -34,21 +34,21 @@ const FavoritesPage = () => {
           <Card>
             <CardContent className="p-12 text-center">
               <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Favori İlanınız Yok</h2>
+              <h2 className="text-xl font-semibold mb-2">Favori Adınız Yok</h2>
               <p className="text-gray-600 mb-4">
-                Beğendiğiniz ilanları favorilere ekleyerek daha sonra kolayca erişebilirsiniz.
+                Beğendiğiniz listingları favorilere ekleyerek daha sonra kolayca erişebilirsiniz.
               </p>
               <Button
-                onClick={() => navigate('/ilanlar')}
+                onClick={() => navigate('/listinglar')}
                 className="bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
               >
-                İlanları Görüntüle
+                Adları Görüntüle
               </Button>
             </CardContent>
           </Card>
         ) : (
           <>
-            <p className="text-gray-600 mb-6">{favorites.length} favori ilan</p>
+            <p className="text-gray-600 mb-6">{favorites.length} favori listing</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {favorites.map((listing) => (
                 <Card
@@ -57,7 +57,7 @@ const FavoritesPage = () => {
                 >
                   <div
                     className="cursor-pointer"
-                    onClick={() => navigate(`/ilan/${listing.id}`)}
+                    onClick={() => navigate(`/listing/${listing.id}`)}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img

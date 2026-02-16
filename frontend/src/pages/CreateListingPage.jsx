@@ -69,7 +69,7 @@ const CreateListingPage = () => {
     if (!formData.title || !formData.category || !formData.price || !formData.city || !formData.description) {
       toast({
         title: "Hata",
-        description: "Lütfen tüm gerekli alanları doldurun.",
+        description: "Lütfen all gerekli alanları doldurun.",
         variant: "destructive"
       });
       return;
@@ -87,11 +87,11 @@ const CreateListingPage = () => {
     // In real app, this would be sent to backend
     toast({
       title: "Başarılı!",
-      description: "İlanınız başarıyla oluşturuldu."
+      description: "Adınız başarıyla oluşturuldu."
     });
 
     setTimeout(() => {
-      navigate('/ilanlar');
+      navigate('/listinglar');
     }, 1500);
   };
 
@@ -102,15 +102,15 @@ const CreateListingPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Card>
           <CardContent className="p-6">
-            <h1 className="text-3xl font-bold mb-6">Ücretsiz İlan Ver</h1>
+            <h1 className="text-3xl font-bold mb-6">Ücretsiz Ad Ver</h1>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Category Selection */}
               <div>
-                <Label htmlFor="category">Kategori *</Label>
+                <Label htmlFor="category">Category *</Label>
                 <Select value={formData.category} onValueChange={handleCategoryChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Kategori Seçin" />
+                    <SelectValue placeholder="Category Seçin" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map(cat => (
@@ -125,10 +125,10 @@ const CreateListingPage = () => {
               {/* Sub Category */}
               {selectedCategory && (
                 <div>
-                  <Label htmlFor="subCategory">Alt Kategori *</Label>
+                  <Label htmlFor="subCategory">Alt Category *</Label>
                   <Select value={formData.subCategory} onValueChange={(val) => setFormData({...formData, subCategory: val})}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Alt Kategori Seçin" />
+                      <SelectValue placeholder="Alt Category Seçin" />
                     </SelectTrigger>
                     <SelectContent>
                       {selectedCategory.subCategories.map(sub => (
@@ -143,7 +143,7 @@ const CreateListingPage = () => {
 
               {/* Title */}
               <div>
-                <Label htmlFor="title">İlan Başlığı *</Label>
+                <Label htmlFor="title">Ad Başlığı *</Label>
                 <Input
                   id="title"
                   placeholder="Örn: 2020 Model Volkswagen Golf"
@@ -156,11 +156,11 @@ const CreateListingPage = () => {
 
               {/* Price */}
               <div>
-                <Label htmlFor="price">Fiyat (TL) *</Label>
+                <Label htmlFor="price">Price (TL) *</Label>
                 <Input
                   id="price"
                   type="number"
-                  placeholder="Fiyat girin"
+                  placeholder="Price girin"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
                   min="0"
@@ -169,10 +169,10 @@ const CreateListingPage = () => {
 
               {/* City */}
               <div>
-                <Label htmlFor="city">Şehir *</Label>
+                <Label htmlFor="city">City *</Label>
                 <Select value={formData.city} onValueChange={(val) => setFormData({...formData, city: val})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Şehir Seçin" />
+                    <SelectValue placeholder="City Seçin" />
                   </SelectTrigger>
                   <SelectContent>
                     {cities.map(city => (
@@ -189,7 +189,7 @@ const CreateListingPage = () => {
                 <Label htmlFor="description">Açıklama *</Label>
                 <Textarea
                   id="description"
-                  placeholder="İlanınız hakkında detaylı bilgi verin..."
+                  placeholder="Adınız hakkında detaylı bilgi verin..."
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={6}
@@ -283,14 +283,14 @@ const CreateListingPage = () => {
                   type="submit"
                   className="flex-1 bg-[#FFD100] text-black hover:bg-[#FFD100]/90"
                 >
-                  İlanı Yayınla
+                  Adı Yayınla
                 </Button>
               </div>
 
               {/* Info Box */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-900">
-                  ℹ️ İlanınız yöneticiler tarafından onaylandıktan sonra yayınlanacaktır. Bu işlem genellikle 24 saat içinde tamamlanır.
+                  ℹ️ Adınız yöneticiler tarafından onaylandıktan sonra yayınlanacaktır. Bu işlem genellikle 24 saat içinde tamamlanır.
                 </p>
               </div>
             </form>
