@@ -102,9 +102,9 @@ const ListingsPage = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">
-            {getCategoryName() || (searchQuery ? `"${searchQuery}" için sonuçlar` : 'All Adlar')}
+            {getCategoryName() || (searchQuery ? `"${searchQuery}" results` : 'All Adlar')}
           </h1>
-          <p className="text-gray-600">{filteredListings.length} listing bulundu</p>
+          <p className="text-gray-600">{filteredListings.length} listing found</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -127,7 +127,7 @@ const ListingsPage = () => {
                       setOnlyFeatured(false);
                     }}
                   >
-                    Temizle
+                    Clear
                   </Button>
                 </div>
 
@@ -171,7 +171,7 @@ const ListingsPage = () => {
 
                 {/* Price Range Filter */}
                 <div className="mb-4">
-                  <label className="text-sm font-medium mb-2 block">Price Aralığı</label>
+                  <label className="text-sm font-medium mb-2 block">Price Range</label>
                   <div className="space-y-3">
                     <Slider
                       value={priceRange}
@@ -196,7 +196,7 @@ const ListingsPage = () => {
                       onChange={(e) => setOnlyFeatured(e.target.checked)}
                       className="w-4 h-4 rounded border-gray-300 text-[#FFD100] focus:ring-[#FFD100]"
                     />
-                    <span className="text-sm">Sadece Featured Adları</span>
+                    <span className="text-sm">Only Featured Adları</span>
                   </label>
                 </div>
               </CardContent>

@@ -236,7 +236,7 @@ const ProfilePage = () => {
                           Hesabınızı silerseniz all verileriniz kalıcı olarak silinecektir.
                         </p>
                         <Button variant="destructive">
-                          Hesabımı Sil
+                          My Accountı Sil
                         </Button>
                       </div>
                     </div>

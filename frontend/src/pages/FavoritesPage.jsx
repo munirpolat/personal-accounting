@@ -15,8 +15,8 @@ const FavoritesPage = () => {
   const handleRemove = (id) => {
     setFavorites(favorites.filter(f => f.id !== id));
     toast({
-      title: "Favorilerden Çıkarıldı",
-      description: "Ad favorilerden kaldırıldı."
+      title: "Favoritesden Çıkarıldı",
+      description: "Ad favoritesden kaldırıldı."
     });
   };
 
@@ -27,7 +27,7 @@ const FavoritesPage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Heart className="h-6 w-6 text-red-500 fill-red-500" />
-          <h1 className="text-3xl font-bold">Favorilerim</h1>
+          <h1 className="text-3xl font-bold">Favoritesim</h1>
         </div>
 
         {favorites.length === 0 ? (
@@ -36,7 +36,7 @@ const FavoritesPage = () => {
               <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Favori Adınız Yok</h2>
               <p className="text-gray-600 mb-4">
-                Beğendiğiniz listingları favorilere ekleyerek daha sonra kolayca erişebilirsiniz.
+                Beğendiğiniz listingları favoritese ekleyerek daha sonra kolayca erişebilirsiniz.
               </p>
               <Button
                 onClick={() => navigate('/listinglar')}

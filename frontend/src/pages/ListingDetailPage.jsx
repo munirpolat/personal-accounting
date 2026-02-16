@@ -40,7 +40,7 @@ const ListingDetailPage = () => {
   const handleFavorite = () => {
     setIsFavorite(!isFavorite);
     toast({
-      title: isFavorite ? "Favorilerden çıkarıldı" : "Favorilere eklendi",
+      title: isFavorite ? "Favoritesden çıkarıldı" : "Favoritese eklendi",
       description: listing.title,
     });
   };
