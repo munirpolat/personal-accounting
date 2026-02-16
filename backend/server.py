@@ -447,7 +447,7 @@ async def get_categories():
 # Health check
 @api_router.get("/")
 async def root():
-    return {"message": "sahibinden.com Clone API"}
+    return {"message": "fromowner.ca API"}
 
 
 # Include the router in the main app
